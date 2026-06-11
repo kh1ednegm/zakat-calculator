@@ -1,0 +1,23 @@
+body {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+.card {
+  border: none;
+  border-radius: 1rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.navbar-brand {
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 576px) {
+  .stat-value {
+    font-size: 1.15rem;
+  }
+}

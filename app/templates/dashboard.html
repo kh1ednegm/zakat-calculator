@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">لوحة التحكم</h2>
+{% set currency = settings.currency or 'ر.س' %}
+<div class="row g-3">
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body text-center">
+      <div class="text-muted">إجمالي المدخرات (بعد السحوبات)</div>
+      <div class="stat-value text-success">{{ summary.net_savings | money }} {{ currency }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body text-center">
+      <div class="text-muted">إجمالي قيمة الذهب</div>
+      <div class="stat-value text-warning">{{ summary.gold_total | money }} {{ currency }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body text-center">
+      <div class="text-muted">إجمالي الديون</div>
+      <div class="stat-value text-danger">{{ summary.debts_total | money }} {{ currency }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body text-center">
+      <div class="text-muted">صافي الثروة</div>
+      <div class="stat-value">{{ summary.net_wealth | money }} {{ currency }}</div>
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100"><div class="card-body text-center">
+      <div class="text-muted">النصاب الحالي (85 جم ذهب)</div>
+      <div class="stat-value">{{ summary.nisab | money }} {{ currency }}</div>
+      {% if summary.reached_nisab %}
+      <span class="badge bg-success">بلغت النصاب</span>
+      {% else %}
+      <span class="badge bg-secondary">لم تبلغ النصاب</span>
+      {% endif %}
+    </div></div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="card shadow-sm h-100 border-success"><div class="card-body text-center">
+      <div class="text-muted">تقدير الزكاة (2.5٪)</div>
+      <div class="stat-value text-success">{{ summary.zakat_estimate | money }} {{ currency }}</div>
+    </div></div>
+  </div>
+</div>
+{% if not settings.gold_price_per_gram or settings.gold_price_per_gram <= 0 %}
+<div class="alert alert-info mt-4">
+  لم يتم إدخال سعر جرام الذهب بعد. <a href="/settings">أدخله من صفحة الإعدادات</a> لحساب النصاب والزكاة بدقة.
+</div>
+{% endif %}
+<div class="mt-4">
+  <a href="/zakat" class="btn btn-success">الانتقال إلى حاسبة الزكاة</a>
+  <a href="/reports" class="btn btn-outline-success">إصدار تقرير PDF</a>
+</div>
+{% endblock %}

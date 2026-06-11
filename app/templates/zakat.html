@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">حاسبة الزكاة</h2>
+<div class="alert alert-warning">{{ disclaimer }}</div>
+{% set currency = settings.currency or 'ر.س' %}
+{% set kinds = {'savings': 'مدخرات', 'gold': 'ذهب', 'withdrawals': 'سحوبات'} %}
+
+<div class="card shadow-sm mb-4"><div class="card-body">
+  <h5 class="card-title">النصاب الحالي</h5>
+  <p class="mb-1">سعر جرام الذهب: <strong>{{ settings.gold_price_per_gram | money }} {{ currency }}</strong></p>
+  <p class="mb-0">النصاب = 85 جم × سعر الجرام = <strong>{{ m2.nisab | money }} {{ currency }}</strong></p>
+</div></div>
+
+<div class="row g-4">
+  {% for result, name in [(m1, 'الطريقة الأولى: الحول المستقل لكل مال'), (m2, 'الطريقة الثانية: موعد زكاة موحد')] %}
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-success text-white fw-bold">{{ name }}</div>
+      <div class="card-body">
+        <div class="row text-center mb-3">
+          <div class="col-4">
+            <div class="text-muted small">الوعاء الزكوي</div>
+            <div class="fw-bold">{{ result.base_total | money }}</div>
+          </div>
+          <div class="col-4">
+            <div class="text-muted small">الديون</div>
+            <div class="fw-bold text-danger">{{ result.debts_total | money }}</div>
+          </div>
+          <div class="col-4">
+            <div class="text-muted small">الصافي</div>
+            <div class="fw-bold">{{ result.net_total | money }}</div>
+          </div>
+        </div>
+        <div class="text-center mb-3">
+          {% if result.reached_nisab %}
+          <span class="badge bg-success mb-2">بلغ النصاب</span>
+          {% else %}
+          <span class="badge bg-secondary mb-2">لم يبلغ النصاب</span>
+          {% endif %}
+          <div class="display-6 text-success fw-bold">{{ result.zakat_due | money }} {{ currency }}</div>
+          <div class="text-muted small">الزكاة المستحقة (2.5٪)</div>
+        </div>
+        <h6>تفصيل الأصول</h6>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>النوع</th><th>الوصف</th><th>التاريخ</th><th>القيمة</th><th>الحالة</th></tr></thead>
+            <tbody>
+            {% for line in result.lines %}
+              <tr>
+                <td>{{ kinds.get(line.kind, line.kind) }}</td>
+                <td>{{ line.description }}<br><small class="text-muted">{{ line.reason }}</small></td>
+                <td>{{ line.start_date }}</td>
+                <td>{{ line.value | money }}</td>
+                <td>
+                  {% if line.included %}
+                  <span class="badge bg-success">مشمول</span>
+                  {% else %}
+                  <span class="badge bg-secondary">غير مشمول</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="text-center text-muted">لا توجد أصول مسجلة</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
