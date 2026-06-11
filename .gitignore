@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+*.db
+.pytest_cache/
+.venv/
+venv/
+.idea/
+.vscode/
+app/static/fonts/*.ttf
