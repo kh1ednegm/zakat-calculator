@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="card-title text-center mb-4">إنشاء حساب</h2>
+        <form method="post" action="/register">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-3">
+            <label class="form-label">الاسم الكامل</label>
+            <input type="text" name="full_name" class="form-control" required minlength="2" maxlength="120">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">البريد الإلكتروني</label>
+            <input type="email" name="email" class="form-control" required autocomplete="email">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">كلمة المرور (8 أحرف على الأقل)</label>
+            <input type="password" name="password" class="form-control" required minlength="8" autocomplete="new-password">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">تأكيد كلمة المرور</label>
+            <input type="password" name="password_confirm" class="form-control" required minlength="8" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-success w-100">إنشاء الحساب</button>
+        </form>
+        <p class="text-center mt-3 mb-0">لديك حساب بالفعل؟ <a href="/login">سجل دخولك</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

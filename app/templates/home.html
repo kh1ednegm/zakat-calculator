@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-5 fw-bold text-success mb-3">حاسبة الزكاة</h1>
+  <p class="lead mx-auto" style="max-width: 640px;">
+    تطبيق عربي يساعدك على تسجيل مدخراتك وذهبك وديونك، وحساب زكاة أموالك
+    وفق طريقتين فقهيتين معتبرتين: الحول المستقل لكل مال، وموعد الزكاة الموحد،
+    مع إمكانية إصدار تقرير PDF مفصل والوصول إلى بياناتك من أي جهاز.
+  </p>
+  {% if not user %}
+  <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+    <a href="/login" class="btn btn-success btn-lg px-4">تسجيل الدخول</a>
+    <a href="/register" class="btn btn-outline-success btn-lg px-4">إنشاء حساب</a>
+  </div>
+  {% else %}
+  <a href="/dashboard" class="btn btn-success btn-lg mt-4">الانتقال إلى لوحة التحكم</a>
+  {% endif %}
+</div>
+<div class="row g-3 mt-2">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm text-center"><div class="card-body">
+      <h5 class="card-title">طريقتا حساب</h5>
+      <p class="card-text">الحول المستقل لكل مال أو موعد زكاة موحد سنوي.</p>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm text-center"><div class="card-body">
+      <h5 class="card-title">حساب النصاب</h5>
+      <p class="card-text">النصاب = 85 جرامًا من الذهب × سعر الجرام الحالي.</p>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm text-center"><div class="card-body">
+      <h5 class="card-title">تقارير PDF</h5>
+      <p class="card-text">تقرير مفصل بالمدخرات والذهب والديون ونتائج الزكاة.</p>
+    </div></div>
+  </div>
+</div>
+{% endblock %}
