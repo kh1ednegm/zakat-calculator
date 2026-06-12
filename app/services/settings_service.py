@@ -34,7 +34,7 @@ def setup_checklist(settings: UserSettings) -> list[dict]:
             "id": "currency",
             "label": "العملة",
             "done": bool(settings.currency and settings.currency.strip()),
-            "hint": "مثال: ر.س أو د.إ",
+            "hint": "مثال: ج.م ",
         },
         {
             "id": "method",

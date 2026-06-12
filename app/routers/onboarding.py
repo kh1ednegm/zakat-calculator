@@ -28,7 +28,7 @@ def complete_onboarding(
     user=Depends(require_user),
     csrf_token: str = Form(...),
     gold_price_per_gram: str = Form(...),
-    currency: str = Form("ر.س"),
+    currency: str = Form("ج.م"),
     zakat_date: str = Form(""),
     preferred_method: int = Form(1),
 ):
@@ -37,7 +37,7 @@ def complete_onboarding(
     try:
         data = SettingsIn(
             gold_price_per_gram=gold_price_per_gram,
-            currency=currency.strip() or "ر.س",
+            currency=currency.strip() or "ج.م",
             zakat_date=zakat_date or None,
             preferred_method=preferred_method,
         )
