@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="onboarding-wrap animate-in">
+  <div class="text-center mb-4">
+    <div class="hero-badge">
+      <i class="bi bi-stars"></i> خطوة واحدة قبل البدء
+    </div>
+    <h1 class="onboarding-title">إعداد حسابك</h1>
+    <p class="onboarding-subtitle">
+      حدّد طريقة حساب الزكاة وسعر الذهب والعملة — نحتاجها لحساب النصاب بدقة
+    </p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card onboarding-card">
+        <div class="card-body p-4 p-md-5">
+          <form method="post" action="/onboarding" id="onboardingForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <!-- Step 1: Method -->
+            <section class="onboarding-step">
+              <div class="step-header">
+                <span class="step-number">1</span>
+                <div>
+                  <h3>كيف تفضّل حساب زكاتك؟</h3>
+                  <p class="text-muted mb-0">اختر الطريقة الفقهية التي تناسبك — يمكنك تغييرها لاحقًا من الإعدادات</p>
+                </div>
+              </div>
+              <div class="row g-3 mt-2">
+                <div class="col-md-6">
+                  <label class="method-card">
+                    <input type="radio" name="preferred_method" value="1"
+                           {{ 'checked' if (s.preferred_method or 1) == 1 else '' }}>
+                    <div class="method-card-body">
+                      <i class="bi bi-calendar3"></i>
+                      <strong>الحول المستقل</strong>
+                      <span>كل إيداع وكل ذهب له حول هجري مستقل</span>
+                    </div>
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <label class="method-card">
+                    <input type="radio" name="preferred_method" value="2"
+                           {{ 'checked' if s.preferred_method == 2 else '' }}>
+                    <div class="method-card-body">
+                      <i class="bi bi-calendar-event"></i>
+                      <strong>موعد زكاة موحد</strong>
+                      <span>تجمع كل أموالك في تاريخ سنوي واحد</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- Step 2: Gold price & currency -->
+            <section class="onboarding-step">
+              <div class="step-header">
+                <span class="step-number">2</span>
+                <div>
+                  <h3>سعر الذهب والعملة</h3>
+                  <p class="text-muted mb-0">نستخدم سعر جرام الذهب عيار 24 لحساب النصاب (85 جم)</p>
+                </div>
+              </div>
+              <div class="row g-3 mt-2">
+                <div class="col-md-7">
+                  <label class="form-label"><i class="bi bi-gem"></i> سعر جرام الذهب اليوم (عيار 24)</label>
+                  <input type="number" step="0.01" min="0.01" name="gold_price_per_gram" class="form-control" required
+                         value="{{ s.gold_price_per_gram if s.gold_price_per_gram and s.gold_price_per_gram > 0 else '' }}"
+                         placeholder="مثال: 285.50">
+                  <div class="form-text">ابحث عن «سعر جرام الذهب عيار 24 اليوم» في بلدك</div>
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label"><i class="bi bi-currency-exchange"></i> العملة</label>
+                  <input type="text" name="currency" maxlength="10" class="form-control"
+                         value="{{ s.currency or 'ر.س' }}" placeholder="ر.س">
+                </div>
+              </div>
+            </section>
+
+            <!-- Step 3: Zakat date (method 2 only) -->
+            <section class="onboarding-step" id="zakatDateStep">
+              <div class="step-header">
+                <span class="step-number">3</span>
+                <div>
+                  <h3>موعد الزكاة السنوي</h3>
+                  <p class="text-muted mb-0">مطلوب فقط إذا اخترت «موعد زكاة موحد»</p>
+                </div>
+              </div>
+              <div class="mt-2">
+                <label class="form-label"><i class="bi bi-calendar-check"></i> تاريخ الزكاة السنوي</label>
+                <input type="date" name="zakat_date" id="zakatDateInput" class="form-control"
+                       value="{{ s.zakat_date or '' }}">
+              </div>
+            </section>
+
+            <button type="submit" class="btn btn-accent btn-lg w-100 mt-4">
+              <i class="bi bi-check2-circle"></i> حفظ والبدء
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
