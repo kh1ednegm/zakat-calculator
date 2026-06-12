@@ -1,17 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">التقارير</h2>
+<div class="page-header animate-in">
+  <h2><i class="bi bi-file-earmark-pdf"></i> التقارير</h2>
+  <p class="page-subtitle">حمّل تقريرًا مفصلًا بصيغة PDF</p>
+</div>
+
+{% if needs_setup %}
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle"></i>
+  أكمل <a href="/onboarding">إعداد حسابك</a> (سعر الذهب على الأقل) قبل إصدار تقرير دقيق.
+</div>
+{% endif %}
+
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <div class="card shadow-sm text-center">
-      <div class="card-body p-4">
-        <h5 class="card-title mb-3">تقرير حساب الزكاة (PDF)</h5>
-        <p class="card-text">
-          يتضمن التقرير: ملخص المدخرات، وملخص الذهب، وملخص الديون،
-          وحساب النصاب، ونتيجة الطريقة الأولى والطريقة الثانية،
-          ومبالغ الزكاة النهائية.
+    <div class="card text-center animate-in">
+      <div class="card-body p-5">
+        <div class="feature-icon mx-auto mb-3"><i class="bi bi-file-earmark-pdf"></i></div>
+        <h5 class="mb-3">تقرير حساب الزكاة</h5>
+        <p class="text-muted mb-4">
+          يتضمن: ملخص المدخرات والذهب والديون، حساب النصاب،
+          ونتائج الطريقتين الفقهيتين مع مبالغ الزكاة النهائية.
         </p>
-        <a href="/reports/pdf" class="btn btn-success btn-lg">تحميل التقرير PDF</a>
+        <a href="/reports/pdf" class="btn btn-accent btn-lg">
+          <i class="bi bi-download"></i> تحميل PDF
+        </a>
       </div>
     </div>
   </div>

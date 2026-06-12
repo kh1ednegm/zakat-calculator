@@ -1,73 +1,95 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">الذهب</h2>
+<div class="page-header animate-in">
+  <h2><i class="bi bi-gem"></i> الذهب</h2>
+  <p class="page-subtitle">سجّل قطع الذهب وتقييمها بسعر السوق</p>
+</div>
+
 {% if not gold_price or gold_price <= 0 %}
-<div class="alert alert-info">لم يتم إدخال سعر جرام الذهب. <a href="/settings">أدخله من الإعدادات</a> لتقييم الذهب بسعر السوق.</div>
+<div class="alert alert-info">
+  <i class="bi bi-info-circle"></i>
+  لم يتم إدخال سعر جرام الذهب. <a href="/settings">أدخله من الإعدادات</a> لتقييم الذهب بسعر السوق.
+</div>
 {% endif %}
+
 <div class="row g-4">
   <div class="col-lg-4">
-    <div class="card shadow-sm"><div class="card-body">
-      <h5 class="card-title">{{ 'تعديل ذهب' if edit_item else 'إضافة ذهب' }}</h5>
-      <form method="post" action="{{ '/gold/' ~ edit_item.id ~ '/edit' if edit_item else '/gold/add' }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <div class="mb-3">
-          <label class="form-label">الوزن (جرام)</label>
-          <input type="number" step="0.001" min="0.001" name="weight_grams" class="form-control" required
-                 value="{{ edit_item.weight_grams if edit_item else '' }}">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">العيار</label>
-          <select name="karat" class="form-select" required>
-            {% for k in [24, 22, 21, 18] %}
-            <option value="{{ k }}" {{ 'selected' if edit_item and edit_item.karat == k else '' }}>عيار {{ k }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">تاريخ الشراء</label>
-          <input type="date" name="purchase_date" class="form-control" required
-                 value="{{ edit_item.purchase_date if edit_item else '' }}">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">الوصف (اختياري)</label>
-          <input type="text" name="description" maxlength="255" class="form-control"
-                 value="{{ (edit_item.description or '') if edit_item else '' }}">
-        </div>
-        <button type="submit" class="btn btn-success w-100">حفظ</button>
-        {% if edit_item %}<a href="/gold" class="btn btn-outline-secondary w-100 mt-2">إلغاء</a>{% endif %}
-      </form>
-    </div></div>
+    <div class="card animate-in">
+      <div class="card-header">
+        <i class="bi bi-{% if edit_item %}pencil{% else %}plus-circle{% endif %}"></i>
+        {{ 'تعديل ذهب' if edit_item else 'إضافة ذهب' }}
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ '/gold/' ~ edit_item.id ~ '/edit' if edit_item else '/gold/add' }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="mb-3">
+            <label class="form-label">الوزن (جرام)</label>
+            <input type="number" step="0.001" min="0.001" name="weight_grams" class="form-control" required
+                   value="{{ edit_item.weight_grams if edit_item else '' }}" placeholder="10.000">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">العيار</label>
+            <select name="karat" class="form-select" required>
+              {% for k in [24, 22, 21, 18] %}
+              <option value="{{ k }}" {{ 'selected' if edit_item and edit_item.karat == k else '' }}>عيار {{ k }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">تاريخ الشراء</label>
+            <input type="date" name="purchase_date" class="form-control" required
+                   value="{{ edit_item.purchase_date if edit_item else '' }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">الوصف <span class="text-muted">(اختياري)</span></label>
+            <input type="text" name="description" maxlength="255" class="form-control"
+                   value="{{ (edit_item.description or '') if edit_item else '' }}" placeholder="مثال: سوار ذهب">
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg"></i> حفظ</button>
+          {% if edit_item %}<a href="/gold" class="btn btn-outline-primary w-100 mt-2">إلغاء</a>{% endif %}
+        </form>
+      </div>
+    </div>
   </div>
   <div class="col-lg-8">
-    <div class="card shadow-sm"><div class="card-body">
-      <h5 class="card-title">سجل الذهب</h5>
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead><tr><th>تاريخ الشراء</th><th>الوزن (جم)</th><th>العيار</th><th>القيمة الحالية</th><th>إجراءات</th></tr></thead>
-          <tbody>
-          {% for item in items %}
-            <tr>
-              <td>{{ item.purchase_date }}</td>
-              <td>{{ item.weight_grams }}</td>
-              <td>{{ item.karat }}</td>
-              <td>{{ values[item.id] | money }}</td>
-              <td class="text-nowrap">
-                <a href="/gold/{{ item.id }}/edit" class="btn btn-sm btn-outline-primary">تعديل</a>
-                <form method="post" action="/gold/{{ item.id }}/delete" class="d-inline"
-                      onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
-                </form>
-              </td>
-            </tr>
-          {% else %}
-            <tr><td colspan="5" class="text-center text-muted">لا توجد أصول ذهبية بعد</td></tr>
-          {% endfor %}
-          </tbody>
-          <tfoot><tr class="table-light fw-bold"><td>الإجمالي</td><td colspan="4">{{ total | money }}</td></tr></tfoot>
-        </table>
+    <div class="card animate-in animate-in-delay-1">
+      <div class="card-header"><i class="bi bi-clock-history"></i> سجل الذهب</div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead><tr><th>تاريخ الشراء</th><th>الوزن</th><th>العيار</th><th>القيمة</th><th>إجراءات</th></tr></thead>
+            <tbody>
+            {% for item in items %}
+              <tr>
+                <td>{{ item.purchase_date }}</td>
+                <td>{{ item.weight_grams }} جم</td>
+                <td><span class="badge bg-secondary">{{ item.karat }}K</span></td>
+                <td class="fw-bold">{{ values[item.id] | money }}</td>
+                <td class="text-nowrap">
+                  <a href="/gold/{{ item.id }}/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                  <form method="post" action="/gold/{{ item.id }}/delete" class="d-inline"
+                        onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5">
+                <div class="empty-state">
+                  <i class="bi bi-gem"></i>
+                  لا توجد أصول ذهبية بعد
+                </div>
+              </td></tr>
+            {% endfor %}
+            </tbody>
+            {% if items %}
+            <tfoot><tr><td>الإجمالي</td><td colspan="4" class="fw-bold">{{ total | money }}</td></tr></tfoot>
+            {% endif %}
+          </table>
+        </div>
       </div>
-    </div></div>
+    </div>
   </div>
 </div>
 {% endblock %}

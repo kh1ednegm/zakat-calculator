@@ -1,57 +1,93 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">لوحة التحكم</h2>
-{% set currency = settings.currency or 'ر.س' %}
-<div class="row g-3">
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100"><div class="card-body text-center">
-      <div class="text-muted">إجمالي المدخرات (بعد السحوبات)</div>
-      <div class="stat-value text-success">{{ summary.net_savings | money }} {{ currency }}</div>
-    </div></div>
-  </div>
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100"><div class="card-body text-center">
-      <div class="text-muted">إجمالي قيمة الذهب</div>
-      <div class="stat-value text-warning">{{ summary.gold_total | money }} {{ currency }}</div>
-    </div></div>
-  </div>
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100"><div class="card-body text-center">
-      <div class="text-muted">إجمالي الديون</div>
-      <div class="stat-value text-danger">{{ summary.debts_total | money }} {{ currency }}</div>
-    </div></div>
-  </div>
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100"><div class="card-body text-center">
-      <div class="text-muted">صافي الثروة</div>
-      <div class="stat-value">{{ summary.net_wealth | money }} {{ currency }}</div>
-    </div></div>
-  </div>
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100"><div class="card-body text-center">
-      <div class="text-muted">النصاب الحالي (85 جم ذهب)</div>
-      <div class="stat-value">{{ summary.nisab | money }} {{ currency }}</div>
-      {% if summary.reached_nisab %}
-      <span class="badge bg-success">بلغت النصاب</span>
-      {% else %}
-      <span class="badge bg-secondary">لم تبلغ النصاب</span>
-      {% endif %}
-    </div></div>
-  </div>
-  <div class="col-6 col-lg-4">
-    <div class="card shadow-sm h-100 border-success"><div class="card-body text-center">
-      <div class="text-muted">تقدير الزكاة (2.5٪)</div>
-      <div class="stat-value text-success">{{ summary.zakat_estimate | money }} {{ currency }}</div>
-    </div></div>
-  </div>
+<div class="page-header animate-in">
+  <h2>مرحبًا، {{ user.full_name.split(' ')[0] }} 👋</h2>
+  <p class="page-subtitle">نظرة سريعة على ثروتك وحالة الزكاة</p>
 </div>
-{% if not settings.gold_price_per_gram or settings.gold_price_per_gram <= 0 %}
-<div class="alert alert-info mt-4">
-  لم يتم إدخال سعر جرام الذهب بعد. <a href="/settings">أدخله من صفحة الإعدادات</a> لحساب النصاب والزكاة بدقة.
+
+{% if request.query_params.get('setup') == 'done' %}
+<div class="alert alert-success">
+  <i class="bi bi-check-circle-fill"></i> تم حفظ إعداداتك بنجاح — يمكنك الآن حساب زكاتك بدقة
 </div>
 {% endif %}
-<div class="mt-4">
-  <a href="/zakat" class="btn btn-success">الانتقال إلى حاسبة الزكاة</a>
-  <a href="/reports" class="btn btn-outline-success">إصدار تقرير PDF</a>
+
+{% if needs_setup %}
+<div class="card setup-card mb-4 animate-in">
+  <div class="card-body d-flex flex-wrap align-items-center gap-3">
+    <div class="setup-card-icon"><i class="bi bi-sliders"></i></div>
+    <div class="flex-grow-1">
+      <h5 class="mb-1">إعداد حسابك غير مكتمل</h5>
+      <p class="text-muted mb-2 small">لحساب النصاب والزكاة نحتاج: سعر الذهب، العملة، وطريقة الحساب المفضلة.</p>
+      <ul class="setup-checklist mb-0">
+        {% for step in setup_checklist %}
+        <li class="{{ 'done' if step.done else 'missing' }}">
+          <i class="bi bi-{{ 'check-circle-fill' if step.done else 'circle' }}"></i>
+          {{ step.label }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <a href="/onboarding" class="btn btn-accent"><i class="bi bi-arrow-left"></i> إكمال الإعداد</a>
+  </div>
+</div>
+{% endif %}
+
+{% set currency = settings.currency or 'ر.س' %}
+
+<div class="row g-3">
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-1">
+    <div class="stat-card stat-savings">
+      <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+      <div class="stat-label">المدخرات (بعد السحوبات)</div>
+      <div class="stat-value">{{ summary.net_savings | money }} <small>{{ currency }}</small></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-1">
+    <div class="stat-card stat-gold">
+      <div class="stat-icon"><i class="bi bi-gem"></i></div>
+      <div class="stat-label">قيمة الذهب</div>
+      <div class="stat-value">{{ summary.gold_total | money }} <small>{{ currency }}</small></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-2">
+    <div class="stat-card stat-debts">
+      <div class="stat-icon"><i class="bi bi-credit-card"></i></div>
+      <div class="stat-label">الديون</div>
+      <div class="stat-value">{{ summary.debts_total | money }} <small>{{ currency }}</small></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-2">
+    <div class="stat-card stat-wealth">
+      <div class="stat-icon"><i class="bi bi-piggy-bank"></i></div>
+      <div class="stat-label">صافي الثروة</div>
+      <div class="stat-value">{{ summary.net_wealth | money }} <small>{{ currency }}</small></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-3">
+    <div class="stat-card stat-nisab">
+      <div class="stat-icon"><i class="bi bi-bar-chart"></i></div>
+      <div class="stat-label">النصاب (85 جم ذهب)</div>
+      <div class="stat-value">{{ summary.nisab | money }} <small>{{ currency }}</small></div>
+      {% if summary.reached_nisab %}
+      <span class="badge bg-success mt-2"><i class="bi bi-check-lg"></i> بلغت النصاب</span>
+      {% else %}
+      <span class="badge bg-secondary mt-2">لم تبلغ النصاب بعد</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-6 col-lg-4 animate-in animate-in-delay-3">
+    <div class="stat-card stat-zakat">
+      <div class="stat-icon"><i class="bi bi-calculator"></i></div>
+      <div class="stat-label">تقدير الزكاة (2.5٪)</div>
+      <div class="stat-value">{{ summary.zakat_estimate | money }} <small>{{ currency }}</small></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="quick-actions">
+  <a href="/zakat" class="btn btn-primary"><i class="bi bi-calculator"></i> حاسبة الزكاة</a>
+  <a href="/savings" class="btn btn-outline-primary"><i class="bi bi-plus-circle"></i> إضافة مدخرات</a>
+  <a href="/reports" class="btn btn-outline-primary"><i class="bi bi-file-earmark-pdf"></i> تقرير PDF</a>
 </div>
 {% endblock %}

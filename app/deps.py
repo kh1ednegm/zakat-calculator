@@ -8,6 +8,7 @@ from app.config import settings
 from app.database.session import get_db
 from app.models import User
 from app.security import get_csrf_token
+from app.services.settings_service import needs_setup, setup_checklist
 
 templates = Jinja2Templates(directory="app/templates")
 
@@ -50,4 +51,14 @@ def render(request: Request, template: str, context: dict | None = None, *, user
     }
     if context:
         ctx.update(context)
+
+    user_settings = ctx.get("settings") or ctx.get("s") or ctx.get("user_settings")
+    if user_settings is None:
+        user_settings = getattr(request.state, "user_settings", None)
+    if user_settings is not None:
+        ctx["needs_setup"] = needs_setup(user_settings)
+        ctx["setup_checklist"] = setup_checklist(user_settings)
+        if "settings" not in ctx and "s" not in ctx:
+            ctx["settings"] = user_settings
+
     return templates.TemplateResponse(template, ctx, status_code=status_code)

@@ -1,34 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">الإعدادات</h2>
+<div class="page-header animate-in">
+  <h2><i class="bi bi-gear"></i> الإعدادات</h2>
+  <p class="page-subtitle">اضبط سعر الذهب وطريقة حساب الزكاة والعملة</p>
+</div>
+
+{% if needs_setup %}
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle"></i>
+  بعض الإعدادات ناقصة — أكملها هنا أو عبر <a href="/onboarding">معالج الإعداد</a>.
+</div>
+{% endif %}
+
 <div class="row justify-content-center">
   <div class="col-md-8 col-lg-6">
-    <div class="card shadow-sm">
+    <div class="card animate-in">
       <div class="card-body p-4">
         <form method="post" action="/settings">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
           <div class="mb-3">
-            <label class="form-label">سعر جرام الذهب الحالي (عيار 24)</label>
+            <label class="form-label"><i class="bi bi-gem"></i> سعر جرام الذهب (عيار 24)</label>
             <input type="number" step="0.01" min="0" name="gold_price_per_gram" class="form-control" required
-                   value="{{ s.gold_price_per_gram or '' }}">
-            <div class="form-text">يستخدم لحساب النصاب (85 جم) وتقييم الذهب بسعر السوق.</div>
+                   value="{{ s.gold_price_per_gram or '' }}" placeholder="250.00">
+            <div class="form-text">يُستخدم لحساب النصاب (85 جم) وتقييم الذهب.</div>
           </div>
           <div class="mb-3">
-            <label class="form-label">العملة</label>
-            <input type="text" name="currency" maxlength="10" class="form-control" value="{{ s.currency }}">
+            <label class="form-label"><i class="bi bi-currency-exchange"></i> العملة</label>
+            <input type="text" name="currency" maxlength="10" class="form-control" value="{{ s.currency }}" placeholder="ر.س">
           </div>
           <div class="mb-3">
-            <label class="form-label">موعد الزكاة السنوي الموحد (للطريقة الثانية)</label>
-            <input type="date" name="zakat_date" class="form-control" value="{{ s.zakat_date or '' }}">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">الطريقة المفضلة</label>
-            <select name="preferred_method" class="form-select">
+            <label class="form-label"><i class="bi bi-sliders"></i> طريقة حساب الزكاة المفضلة</label>
+            <select name="preferred_method" id="preferredMethod" class="form-select">
               <option value="1" {{ 'selected' if s.preferred_method == 1 else '' }}>الحول المستقل لكل مال</option>
               <option value="2" {{ 'selected' if s.preferred_method == 2 else '' }}>موعد زكاة موحد</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-success w-100">حفظ الإعدادات</button>
+          <div class="mb-4" id="settingsZakatDate">
+            <label class="form-label"><i class="bi bi-calendar-event"></i> موعد الزكاة السنوي الموحد</label>
+            <input type="date" name="zakat_date" id="zakatDateInput" class="form-control" value="{{ s.zakat_date or '' }}">
+            <div class="form-text">مطلوب عند اختيار «موعد زكاة موحد».</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg"></i> حفظ الإعدادات</button>
         </form>
       </div>
     </div>

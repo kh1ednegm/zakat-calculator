@@ -1,46 +1,80 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-3">حاسبة الزكاة</h2>
-<div class="alert alert-warning">{{ disclaimer }}</div>
+<div class="page-header animate-in">
+  <h2><i class="bi bi-calculator"></i> حاسبة الزكاة</h2>
+  <p class="page-subtitle">مقارنة بين طريقتين فقهيتين لحساب زكاة أموالك</p>
+</div>
+
+{% if needs_setup %}
+<div class="alert alert-warning">
+  <i class="bi bi-exclamation-triangle"></i>
+  الإعدادات غير مكتملة — <a href="/onboarding">أكمل الإعداد</a> (سعر الذهب وطريقة الحساب) لنتائج دقيقة.
+</div>
+{% endif %}
+
+<div class="disclaimer-banner">
+  <i class="bi bi-info-circle-fill"></i>
+  <span>{{ disclaimer }}</span>
+</div>
+
 {% set currency = settings.currency or 'ر.س' %}
 {% set kinds = {'savings': 'مدخرات', 'gold': 'ذهب', 'withdrawals': 'سحوبات'} %}
 
-<div class="card shadow-sm mb-4"><div class="card-body">
-  <h5 class="card-title">النصاب الحالي</h5>
-  <p class="mb-1">سعر جرام الذهب: <strong>{{ settings.gold_price_per_gram | money }} {{ currency }}</strong></p>
-  <p class="mb-0">النصاب = 85 جم × سعر الجرام = <strong>{{ m2.nisab | money }} {{ currency }}</strong></p>
-</div></div>
+<div class="card mb-4 animate-in">
+  <div class="card-body d-flex align-items-center gap-3 flex-wrap">
+    <div class="feature-icon mb-0"><i class="bi bi-gem"></i></div>
+    <div>
+      <div class="fw-bold">النصاب الحالي</div>
+      <div class="text-muted small">
+        سعر الجرام: <strong>{{ settings.gold_price_per_gram | money }} {{ currency }}</strong>
+        &nbsp;·&nbsp;
+        النصاب = 85 جم = <strong>{{ m2.nisab | money }} {{ currency }}</strong>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="row g-4">
-  {% for result, name in [(m1, 'الطريقة الأولى: الحول المستقل لكل مال'), (m2, 'الطريقة الثانية: موعد زكاة موحد')] %}
-  <div class="col-lg-6">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-success text-white fw-bold">{{ name }}</div>
+  {% for result, name, method_num in [(m1, 'الحول المستقل لكل مال', '1'), (m2, 'موعد زكاة موحد', '2')] %}
+  <div class="col-lg-6 animate-in animate-in-delay-{{ method_num }}">
+    <div class="card h-100">
+      <div class="card-header islamic-header">
+        <span class="method-badge">الطريقة {{ method_num }}</span>
+        {{ name }}
+      </div>
       <div class="card-body">
-        <div class="row text-center mb-3">
+        <div class="row g-2 mb-3">
           <div class="col-4">
-            <div class="text-muted small">الوعاء الزكوي</div>
-            <div class="fw-bold">{{ result.base_total | money }}</div>
+            <div class="zakat-mini-stat">
+              <div class="label">الوعاء الزكوي</div>
+              <div class="value">{{ result.base_total | money }}</div>
+            </div>
           </div>
           <div class="col-4">
-            <div class="text-muted small">الديون</div>
-            <div class="fw-bold text-danger">{{ result.debts_total | money }}</div>
+            <div class="zakat-mini-stat">
+              <div class="label">الديون</div>
+              <div class="value text-danger">{{ result.debts_total | money }}</div>
+            </div>
           </div>
           <div class="col-4">
-            <div class="text-muted small">الصافي</div>
-            <div class="fw-bold">{{ result.net_total | money }}</div>
+            <div class="zakat-mini-stat">
+              <div class="label">الصافي</div>
+              <div class="value">{{ result.net_total | money }}</div>
+            </div>
           </div>
         </div>
-        <div class="text-center mb-3">
+
+        <div class="text-center mb-4 py-2">
           {% if result.reached_nisab %}
-          <span class="badge bg-success mb-2">بلغ النصاب</span>
+          <span class="badge bg-success mb-2"><i class="bi bi-check-lg"></i> بلغ النصاب</span>
           {% else %}
           <span class="badge bg-secondary mb-2">لم يبلغ النصاب</span>
           {% endif %}
-          <div class="display-6 text-success fw-bold">{{ result.zakat_due | money }} {{ currency }}</div>
+          <div class="zakat-amount">{{ result.zakat_due | money }} {{ currency }}</div>
           <div class="text-muted small">الزكاة المستحقة (2.5٪)</div>
         </div>
-        <h6>تفصيل الأصول</h6>
+
+        <h6 class="mb-3"><i class="bi bi-list-ul"></i> تفصيل الأصول</h6>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead><tr><th>النوع</th><th>الوصف</th><th>التاريخ</th><th>القيمة</th><th>الحالة</th></tr></thead>
@@ -60,7 +94,12 @@
                 </td>
               </tr>
             {% else %}
-              <tr><td colspan="5" class="text-center text-muted">لا توجد أصول مسجلة</td></tr>
+              <tr><td colspan="5">
+                <div class="empty-state py-3">
+                  <i class="bi bi-inbox"></i>
+                  لا توجد أصول مسجلة بعد
+                </div>
+              </td></tr>
             {% endfor %}
             </tbody>
           </table>

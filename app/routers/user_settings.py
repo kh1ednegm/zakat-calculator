@@ -46,6 +46,27 @@ def update_settings(
             user=user,
             status_code=400,
         )
+    if data.gold_price_per_gram <= 0:
+        user_settings = repo.get_or_create(user.id)
+        return render(
+            request,
+            "settings.html",
+            {"s": user_settings, "error": "سعر جرام الذهب يجب أن يكون أكبر من صفر"},
+            user=user,
+            status_code=400,
+        )
+    if data.preferred_method == 2 and data.zakat_date is None:
+        user_settings = repo.get_or_create(user.id)
+        return render(
+            request,
+            "settings.html",
+            {
+                "s": user_settings,
+                "error": "عند اختيار «موعد زكاة موحد» يجب تحديد تاريخ الزكاة السنوي",
+            },
+            user=user,
+            status_code=400,
+        )
     user_settings = repo.update(
         user.id,
         gold_price_per_gram=data.gold_price_per_gram,

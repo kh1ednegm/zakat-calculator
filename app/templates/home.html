@@ -1,39 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center py-5">
-  <h1 class="display-5 fw-bold text-success mb-3">حاسبة الزكاة</h1>
-  <p class="lead mx-auto" style="max-width: 640px;">
-    تطبيق عربي يساعدك على تسجيل مدخراتك وذهبك وديونك، وحساب زكاة أموالك
-    وفق طريقتين فقهيتين معتبرتين: الحول المستقل لكل مال، وموعد الزكاة الموحد،
-    مع إمكانية إصدار تقرير PDF مفصل والوصول إلى بياناتك من أي جهاز.
+<section class="hero animate-in">
+  <div class="hero-badge">
+    <i class="bi bi-shield-check"></i>
+    وفق آراء فقهية معتبرة
+  </div>
+  <h1>احسب زكاتك بسهولة<br>واطمئن على أموالك</h1>
+  <p class="hero-lead">
+    سجّل مدخراتك وذهبك وديونك في مكان واحد، واحسب زكاة أموالك بطريقتين فقهيتين —
+    مع تقرير PDF جاهز للطباعة.
   </p>
   {% if not user %}
-  <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-    <a href="/login" class="btn btn-success btn-lg px-4">تسجيل الدخول</a>
-    <a href="/register" class="btn btn-outline-success btn-lg px-4">إنشاء حساب</a>
+  <div class="hero-actions">
+    <a href="/register" class="btn btn-accent btn-lg">
+      <i class="bi bi-rocket-takeoff"></i> ابدأ مجانًا
+    </a>
+    <a href="/login" class="btn btn-outline-primary btn-lg">
+      <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول
+    </a>
   </div>
   {% else %}
-  <a href="/dashboard" class="btn btn-success btn-lg mt-4">الانتقال إلى لوحة التحكم</a>
+  <a href="/dashboard" class="btn btn-accent btn-lg">
+    <i class="bi bi-grid-fill"></i> لوحة التحكم
+  </a>
   {% endif %}
-</div>
-<div class="row g-3 mt-2">
-  <div class="col-md-4">
-    <div class="card h-100 shadow-sm text-center"><div class="card-body">
-      <h5 class="card-title">طريقتا حساب</h5>
-      <p class="card-text">الحول المستقل لكل مال أو موعد زكاة موحد سنوي.</p>
-    </div></div>
+</section>
+
+<div class="row g-3 feature-grid">
+  <div class="col-md-4 animate-in animate-in-delay-1">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-diagram-3"></i></div>
+      <h5>طريقتا حساب</h5>
+      <p>الحول المستقل لكل مال، أو موعد زكاة موحد سنوي — اختر ما يناسبك.</p>
+    </div>
   </div>
-  <div class="col-md-4">
-    <div class="card h-100 shadow-sm text-center"><div class="card-body">
-      <h5 class="card-title">حساب النصاب</h5>
-      <p class="card-text">النصاب = 85 جرامًا من الذهب × سعر الجرام الحالي.</p>
-    </div></div>
+  <div class="col-md-4 animate-in animate-in-delay-2">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-gem"></i></div>
+      <h5>نصاب دقيق</h5>
+      <p>النصاب = 85 جرامًا من الذهب × سعر الجرام الحالي — محدّث تلقائيًا.</p>
+    </div>
   </div>
-  <div class="col-md-4">
-    <div class="card h-100 shadow-sm text-center"><div class="card-body">
-      <h5 class="card-title">تقارير PDF</h5>
-      <p class="card-text">تقرير مفصل بالمدخرات والذهب والديون ونتائج الزكاة.</p>
-    </div></div>
+  <div class="col-md-4 animate-in animate-in-delay-3">
+    <div class="feature-card">
+      <div class="feature-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+      <h5>تقارير PDF</h5>
+      <p>تقرير مفصل بكل تفاصيل أموالك ونتائج الزكاة — جاهز للطباعة.</p>
+    </div>
   </div>
 </div>
 {% endblock %}

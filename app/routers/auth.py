@@ -5,9 +5,11 @@ from sqlalchemy.orm import Session
 
 from app.database.session import get_db
 from app.deps import get_current_user, render
+from app.repositories import SettingsRepository
 from app.schemas.auth import LoginIn, RegisterIn
 from app.security import validate_csrf
 from app.services import auth_service
+from app.services.settings_service import needs_setup
 
 router = APIRouter(tags=["auth"])
 
@@ -53,7 +55,7 @@ def register(
         return render(request, "register.html", {"error": str(exc)}, status_code=400)
     request.session.clear()
     request.session["user_id"] = user.id
-    return RedirectResponse("/dashboard", status_code=303)
+    return RedirectResponse("/onboarding", status_code=303)
 
 
 @router.get("/login")
@@ -81,7 +83,9 @@ def login(
         return render(request, "login.html", {"error": "بيانات الدخول غير صحيحة"}, status_code=400)
     request.session.clear()
     request.session["user_id"] = user.id
-    return RedirectResponse("/dashboard", status_code=303)
+    user_settings = SettingsRepository(db).get_or_create(user.id)
+    dest = "/onboarding" if needs_setup(user_settings) else "/dashboard"
+    return RedirectResponse(dest, status_code=303)
 
 
 @router.post("/logout")
